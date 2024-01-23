@@ -110,8 +110,20 @@ func HandleAction(input string) error {
 	}
 }
 
-func HandleUpload(inputSlice []string) {
+func HandleUpload(inputSlice []string) error {
+	if inputSlice[1] == "uploaded" && inputSlice[2] == "photo" {
+		username := inputSlice[0]
 
+		val, ok := socialGraph.IsUserExist(username)
+		if ok {
+			val.UploadPhoto()
+			return nil
+		}
+
+		return printAndReturnError(customerror.ErrUnknownUser(username))
+	}
+
+	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
 func HandleLike(inputSlice []string) {
