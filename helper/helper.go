@@ -45,6 +45,8 @@ func RunActivityReporter() {
 			HandleAction(actionInput)
 
 		case "3":
+			displayInput := promptInput(scanner, "Display activity for: ")
+			HandleDisplay(displayInput)
 
 		case "4":
 
@@ -151,8 +153,19 @@ func HandleLike(inputSlice []string) error {
 	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
-func HandleDisplay(input string) {
+func HandleDisplay(input string) error {
+	val, ok := socialGraph.IsUserExist(input)
+	if ok {
+		fmt.Printf("%s activities:\n", val.Username)
 
+		for _, v := range val.ActivityLog() {
+			fmt.Println(v)
+		}
+
+		return nil
+	}
+
+	return printAndReturnError(customerror.ErrUnknownUser(val.Username))
 }
 
 func HandleTrending() {
