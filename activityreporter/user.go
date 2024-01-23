@@ -22,13 +22,13 @@ func NewUser(Username string) User {
 	}
 }
 
-func (u *User) Follow(followed User) error {
-	if u.Username == followed.Username {
+func (u *User) FollowedBy(following User) error {
+	if u.Username == following.Username {
 		return customerror.ErrFollowThemselves
 	}
 
-	if !u.IsFollowing(followed) {
-		followed.Register(u)
+	if !u.IsFollowedBy(following) {
+		u.Register(&following)
 		return nil
 	}
 
@@ -44,29 +44,30 @@ func (u *User) UploadPhoto() {
 	u.Notify(notification)
 }
 
-func (u *User) LikePhoto(liked User) error {
-	if u.IsFollowing(liked) {
-		liked.likedByList = append(liked.likedByList, *u)
+func (u *User) LikedPhotoBy(liker User) error {
+	if u.IsFollowedBy(liker) && u.hasUploadedPhoto {
+		u.likedByList = append(u.likedByList, liker)
 
-		log := fmt.Sprintf("You liked %s's photo", liked.Username)
+		log := fmt.Sprintf("%s liked your photo", liker.Username)
 		u.logActivity(log)
 
-		notification := fmt.Sprintf("%s liked %s's photo", u.Username, liked.Username)
-		u.Notify(notification)
+		notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
+		liker.Notify(notification)
 
 		return nil
 	}
-	return customerror.ErrUnableToLike(liked.Username)
+	return customerror.ErrUnableToLike(u.Username)
 }
 
 func (u *User) LikesCount() int {
 	return len(u.likedByList)
 }
 
-func (u *User) IsFollowing(followed User) bool {
-	var observerU Observer = u
-	for _, v := range followed.followerList {
-		if v == observerU {
+func (u *User) IsFollowedBy(followed User) bool {
+	for _, v := range u.followerList {
+		user := v.(*User)
+
+		if user.Username == followed.Username {
 			return true
 		}
 	}
@@ -87,10 +88,10 @@ func (u *User) Register(observer Observer) {
 
 func (u *User) Notify(notification string) {
 	for _, observer := range u.followerList {
-		observer.OnNotify(u, notification)
+		observer.OnNotify(notification)
 	}
 }
 
-func (u *User) OnNotify(subject Subject, notification string) {
-	u.activityReport = append(u.activityReport, notification)
+func (u *User) OnNotify(notification string) {
+	u.logActivity(notification)
 }

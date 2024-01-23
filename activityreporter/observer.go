@@ -1,5 +1,5 @@
 package activityreporter
 
 type Observer interface {
-	OnNotify(s Subject, notification string)
+	OnNotify(notification string)
 }
