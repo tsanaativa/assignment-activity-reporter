@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
+	"git.garena.com/sea-labs-id/bootcamp/batch-03/tsanaativa-vinnera/assignment-activity-reporter/activityreporter"
 	"git.garena.com/sea-labs-id/bootcamp/batch-03/tsanaativa-vinnera/assignment-activity-reporter/customerror"
 )
 
@@ -15,7 +17,8 @@ func promptInput(scanner *bufio.Scanner, text string) string {
 }
 
 var (
-	scanner = bufio.NewScanner(os.Stdin)
+	scanner     = bufio.NewScanner(os.Stdin)
+	socialGraph = activityreporter.NewSocialGraph()
 )
 
 func RunActivityReporter() {
@@ -34,6 +37,8 @@ func RunActivityReporter() {
 		switch input {
 
 		case "1":
+			setupInput := promptInput(scanner, "Setup social graph: ")
+			HandleSetup(setupInput)
 
 		case "2":
 
@@ -51,8 +56,39 @@ func RunActivityReporter() {
 	}
 }
 
-func HandleSetup(input string) {
+func HandleSetup(input string) error {
+	inputSlice := strings.Split(input, " ")
 
+	if len(inputSlice) == 3 {
+
+		if inputSlice[1] == "follows" {
+
+			username1, username2 := inputSlice[0], inputSlice[2]
+
+			user1, ok := socialGraph.IsUserExist(username1)
+			if !ok {
+				user1 = activityreporter.NewUser(username1)
+				socialGraph.AddNewUser(user1)
+			}
+
+			user2, ok := socialGraph.IsUserExist(username2)
+			if !ok {
+				user2 = activityreporter.NewUser(username2)
+				socialGraph.AddNewUser(user2)
+			}
+
+			err := user1.Follow(user2)
+			if err != nil {
+				return printAndReturnError(err)
+			}
+
+			return nil
+		}
+
+		return printAndReturnError(customerror.ErrInvalidKeyword)
+	}
+
+	return printAndReturnError(customerror.ErrInvalidInput)
 }
 
 func HandleAction(input string) {
@@ -73,6 +109,11 @@ func HandleDisplay(input string) {
 
 func HandleTrending() {
 
+}
+
+func printAndReturnError(err error) error {
+	fmt.Println(err.Error())
+	return err
 }
 
 func printInvalidMenu() {
