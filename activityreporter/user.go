@@ -52,7 +52,7 @@ func (u *User) UploadPhoto() error {
 func (u *User) LikedPhotoBy(liker User) error {
 	if u.hasUploadedPhoto {
 
-		if u.IsFollowedBy(liker) {
+		if u.IsFollowedBy(liker) || u.isEqualTo(liker) {
 
 			if !u.isAlreadyLikedBy(liker) {
 				u.likedByList = append(u.likedByList, liker)
