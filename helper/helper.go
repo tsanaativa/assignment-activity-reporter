@@ -79,7 +79,7 @@ func HandleSetup(input string) error {
 				socialGraph.AddNewUser(user2)
 			}
 
-			err := user2.FollowedBy(user1)
+			err := user2.FollowedBy(*user1)
 			if err != nil {
 				return printAndReturnError(err)
 			}
@@ -98,8 +98,7 @@ func HandleAction(input string) error {
 
 	switch len(inputSlice) {
 	case 3:
-		HandleUpload(inputSlice)
-		return nil
+		return HandleUpload(inputSlice)
 
 	case 4:
 		HandleLike(inputSlice)
@@ -116,7 +115,10 @@ func HandleUpload(inputSlice []string) error {
 
 		val, ok := socialGraph.IsUserExist(username)
 		if ok {
-			val.UploadPhoto()
+			err := val.UploadPhoto()
+			if err != nil {
+				return printAndReturnError(err)
+			}
 			return nil
 		}
 

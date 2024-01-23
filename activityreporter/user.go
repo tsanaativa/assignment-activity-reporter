@@ -16,8 +16,8 @@ type User struct {
 	activityReport []string
 }
 
-func NewUser(Username string) User {
-	return User{
+func NewUser(Username string) *User {
+	return &User{
 		Username: Username,
 	}
 }
@@ -35,13 +35,22 @@ func (u *User) FollowedBy(following User) error {
 	return customerror.ErrAlreadyFollowed
 }
 
-func (u *User) UploadPhoto() {
-	u.hasUploadedPhoto = true
+func (u *User) UploadPhoto() error {
+	if !u.hasUploadedPhoto {
+		u.hasUploadedPhoto = true
 
-	u.logActivity("You uploaded photo")
+		u.logActivity("You uploaded photo")
 
-	notification := fmt.Sprintf("%s uploaded photo", u.Username)
-	u.Notify(notification)
+		notification := fmt.Sprintf("%s uploaded photo", u.Username)
+		u.Notify(notification)
+
+		return nil
+	}
+	return customerror.ErrAlreadyUploaded
+}
+
+func (u *User) HasUploadedPhoto() bool {
+	return u.hasUploadedPhoto
 }
 
 func (u *User) LikedPhotoBy(liker User) error {

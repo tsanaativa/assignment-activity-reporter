@@ -13,6 +13,7 @@ var (
 	ErrAlreadyFollowed  = errors.New("you already followed the user")
 	ErrAlreadyLiked     = errors.New("you already liked the photo")
 	ErrFollowThemselves = errors.New("a user cannot follow themselves")
+	ErrAlreadyUploaded  = errors.New("you cannot upload more than once")
 )
 
 func ErrUnknownUser(username string) error {
