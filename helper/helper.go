@@ -137,7 +137,7 @@ func HandleLike(inputSlice []string) error {
 		if ok {
 			val2, ok2 := socialGraph.IsUserExist(username2)
 			if ok2 {
-				err := val2.LikedPhotoBy(*val)
+				err := val2.LikedPhotoBy(val)
 				if err == nil {
 					return nil
 				}

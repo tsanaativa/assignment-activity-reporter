@@ -49,16 +49,16 @@ func (u *User) UploadPhoto() error {
 	return customerror.ErrAlreadyUploaded
 }
 
-func (u *User) LikedPhotoBy(liker User) error {
+func (u *User) LikedPhotoBy(liker *User) error {
 	if u.hasUploadedPhoto {
 
-		if u.IsFollowedBy(liker) || u.isEqualTo(liker) {
+		if u.IsFollowedBy(*liker) || u.isEqualTo(*liker) {
 
-			if !u.isAlreadyLikedBy(liker) {
-				u.likedByList = append(u.likedByList, liker)
+			if !u.isAlreadyLikedBy(*liker) {
+				u.likedByList = append(u.likedByList, *liker)
 
 				likerStr := liker.Username
-				if u.isEqualTo(liker) {
+				if u.isEqualTo(*liker) {
 					likerStr = "You"
 
 				} else {
@@ -69,8 +69,10 @@ func (u *User) LikedPhotoBy(liker User) error {
 				log := fmt.Sprintf("%s liked your photo", likerStr)
 				u.logActivity(log)
 
-				notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
-				liker.Notify(notification)
+				if !liker.IsFollowedBy(*u) {
+					notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
+					liker.Notify(notification)
+				}
 
 				return nil
 			}
@@ -81,7 +83,7 @@ func (u *User) LikedPhotoBy(liker User) error {
 		return customerror.ErrUnableToLike(u.Username)
 	}
 
-	return customerror.ErrPhotoDoesntExist(u.Username, u.isEqualTo(liker))
+	return customerror.ErrPhotoDoesntExist(u.Username, u.isEqualTo(*liker))
 }
 
 func (u *User) isEqualTo(otherUser User) bool {
