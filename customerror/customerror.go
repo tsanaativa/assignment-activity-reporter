@@ -20,7 +20,10 @@ func ErrUnknownUser(username string) error {
 	return fmt.Errorf("unknown user %s", username)
 }
 
-func ErrPhotoDoesntExist(username string) error {
+func ErrPhotoDoesntExist(username string, isMyself bool) error {
+	if isMyself {
+		return fmt.Errorf("you don't have a photo")
+	}
 	return fmt.Errorf("%s doesn't have a photo", username)
 }
 

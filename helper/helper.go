@@ -101,8 +101,7 @@ func HandleAction(input string) error {
 		return HandleUpload(inputSlice)
 
 	case 4:
-		HandleLike(inputSlice)
-		return nil
+		return HandleLike(inputSlice)
 
 	default:
 		return printAndReturnError(customerror.ErrInvalidInput)

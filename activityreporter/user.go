@@ -49,23 +49,48 @@ func (u *User) UploadPhoto() error {
 	return customerror.ErrAlreadyUploaded
 }
 
-func (u *User) HasUploadedPhoto() bool {
-	return u.hasUploadedPhoto
+func (u *User) LikedPhotoBy(liker User) error {
+	if u.hasUploadedPhoto {
+
+		if u.IsFollowedBy(liker) {
+
+			if !u.isAlreadyLikedBy(liker) {
+				u.likedByList = append(u.likedByList, liker)
+
+				likerStr := liker.Username
+				if u.isEqualTo(liker) {
+					likerStr = "You"
+				}
+
+				log := fmt.Sprintf("%s liked your photo", likerStr)
+				u.logActivity(log)
+
+				notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
+				liker.Notify(notification)
+
+				return nil
+			}
+
+			return customerror.ErrAlreadyLiked
+		}
+
+		return customerror.ErrUnableToLike(u.Username)
+	}
+
+	return customerror.ErrPhotoDoesntExist(u.Username, u.isEqualTo(liker))
 }
 
-func (u *User) LikedPhotoBy(liker User) error {
-	if u.IsFollowedBy(liker) && u.hasUploadedPhoto {
-		u.likedByList = append(u.likedByList, liker)
+func (u *User) isEqualTo(otherUser User) bool {
+	return u.Username == otherUser.Username
+}
 
-		log := fmt.Sprintf("%s liked your photo", liker.Username)
-		u.logActivity(log)
-
-		notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
-		liker.Notify(notification)
-
-		return nil
+func (u *User) isAlreadyLikedBy(otherUser User) bool {
+	for _, v := range u.likedByList {
+		if v.isEqualTo(otherUser) {
+			return true
+		}
 	}
-	return customerror.ErrUnableToLike(u.Username)
+	return false
 }
 
 func (u *User) LikesCount() int {
