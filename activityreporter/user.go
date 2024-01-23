@@ -22,13 +22,13 @@ func NewUser(Username string) *User {
 	}
 }
 
-func (u *User) FollowedBy(following User) error {
+func (u *User) FollowedBy(following *User) error {
 	if u.Username == following.Username {
 		return customerror.ErrFollowThemselves
 	}
 
-	if !u.IsFollowedBy(following) {
-		u.Register(&following)
+	if !u.IsFollowedBy(*following) {
+		u.Register(following)
 		return nil
 	}
 
@@ -60,6 +60,10 @@ func (u *User) LikedPhotoBy(liker User) error {
 				likerStr := liker.Username
 				if u.isEqualTo(liker) {
 					likerStr = "You"
+
+				} else {
+					likerLog := fmt.Sprintf("You liked %s's photo", u.Username)
+					liker.logActivity(likerLog)
 				}
 
 				log := fmt.Sprintf("%s liked your photo", likerStr)

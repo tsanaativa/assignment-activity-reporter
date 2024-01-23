@@ -81,7 +81,7 @@ func HandleSetup(input string) error {
 				socialGraph.AddNewUser(user2)
 			}
 
-			err := user2.FollowedBy(*user1)
+			err := user2.FollowedBy(user1)
 			if err != nil {
 				return printAndReturnError(err)
 			}
