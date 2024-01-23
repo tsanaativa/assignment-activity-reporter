@@ -128,8 +128,28 @@ func HandleUpload(inputSlice []string) error {
 	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
-func HandleLike(inputSlice []string) {
+func HandleLike(inputSlice []string) error {
+	if inputSlice[1] == "likes" && inputSlice[3] == "photo" {
+		username1, username2 := inputSlice[0], inputSlice[2]
 
+		val, ok := socialGraph.IsUserExist(username1)
+		if ok {
+			val2, ok2 := socialGraph.IsUserExist(username2)
+			if ok2 {
+				err := val2.LikedPhotoBy(*val)
+				if err == nil {
+					return nil
+				}
+				return printAndReturnError(err)
+			}
+
+			return printAndReturnError(customerror.ErrUnknownUser(username2))
+		}
+
+		return printAndReturnError(customerror.ErrUnknownUser(username1))
+	}
+
+	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
 func HandleDisplay(input string) {
