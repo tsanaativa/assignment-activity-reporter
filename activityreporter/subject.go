@@ -2,5 +2,5 @@ package activityreporter
 
 type Subject interface {
 	Register(observer Observer)
-	Notify()
+	Notify(notification string)
 }
