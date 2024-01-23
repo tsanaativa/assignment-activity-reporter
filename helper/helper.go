@@ -41,6 +41,8 @@ func RunActivityReporter() {
 			HandleSetup(setupInput)
 
 		case "2":
+			actionInput := promptInput(scanner, "Enter user Actions: ")
+			HandleAction(actionInput)
 
 		case "3":
 
@@ -91,8 +93,21 @@ func HandleSetup(input string) error {
 	return printAndReturnError(customerror.ErrInvalidInput)
 }
 
-func HandleAction(input string) {
+func HandleAction(input string) error {
+	inputSlice := strings.Split(input, " ")
 
+	switch len(inputSlice) {
+	case 3:
+		HandleUpload(inputSlice)
+		return nil
+
+	case 4:
+		HandleLike(inputSlice)
+		return nil
+
+	default:
+		return printAndReturnError(customerror.ErrInvalidInput)
+	}
 }
 
 func HandleUpload(inputSlice []string) {
