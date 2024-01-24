@@ -101,7 +101,6 @@ func HandleSetup(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGra
 			return nil
 		}
 
-		return printAndReturnError(customerror.ErrInvalidKeyword)
 	}
 
 	return printAndReturnError(customerror.ErrInvalidKeyword)
