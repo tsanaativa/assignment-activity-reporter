@@ -14,11 +14,14 @@ type User struct {
 
 	followerList   []Observer
 	activityReport []string
+
+	socialGraph *SocialGraph
 }
 
-func NewUser(Username string) *User {
+func NewUser(Username string, socialGraph *SocialGraph) *User {
 	return &User{
-		Username: Username,
+		Username:    Username,
+		socialGraph: socialGraph,
 	}
 }
 
@@ -43,6 +46,8 @@ func (u *User) UploadPhoto() error {
 
 		notification := fmt.Sprintf("%s uploaded photo", u.Username)
 		u.Notify(notification)
+
+		u.socialGraph.AddToTrending(u)
 
 		return nil
 	}
@@ -73,6 +78,8 @@ func (u *User) LikedPhotoBy(liker *User) error {
 					notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
 					liker.Notify(notification)
 				}
+
+				u.socialGraph.UpdateTrending(u)
 
 				return nil
 			}

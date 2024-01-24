@@ -72,13 +72,13 @@ func HandleSetup(input string) error {
 
 			user1, ok := socialGraph.IsUserExist(username1)
 			if !ok {
-				user1 = activityreporter.NewUser(username1)
+				user1 = activityreporter.NewUser(username1, &socialGraph)
 				socialGraph.AddNewUser(user1)
 			}
 
 			user2, ok := socialGraph.IsUserExist(username2)
 			if !ok {
-				user2 = activityreporter.NewUser(username2)
+				user2 = activityreporter.NewUser(username2, &socialGraph)
 				socialGraph.AddNewUser(user2)
 			}
 
@@ -165,8 +165,7 @@ func HandleDisplay(input string) error {
 
 		return nil
 	}
-
-	return printAndReturnError(customerror.ErrUnknownUser(val.Username))
+	return printAndReturnError(customerror.ErrUnknownUser(input))
 }
 
 func HandleTrending() {
@@ -176,7 +175,7 @@ func HandleTrending() {
 		likesCount := v.LikesCount()
 		fmt.Printf("%d. %s photo got %d like", i+1, v.Username, likesCount)
 
-		if likesCount > 1 {
+		if likesCount != 1 {
 			fmt.Printf("s")
 		}
 

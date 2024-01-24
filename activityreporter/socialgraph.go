@@ -1,9 +1,5 @@
 package activityreporter
 
-import (
-	"sort"
-)
-
 type SocialGraph struct {
 	userList map[string]*User
 	trending []*User
@@ -17,7 +13,6 @@ func NewSocialGraph() SocialGraph {
 
 func (s *SocialGraph) AddNewUser(user *User) {
 	s.userList[user.Username] = user
-	s.trending = append(s.trending, user)
 }
 
 func (s *SocialGraph) IsUserExist(username string) (*User, bool) {
@@ -25,11 +20,21 @@ func (s *SocialGraph) IsUserExist(username string) (*User, bool) {
 	return val, ok
 }
 
-func (s *SocialGraph) Trending() []*User {
+func (s *SocialGraph) AddToTrending(user *User) {
+	s.trending = append(s.trending, user)
+}
 
-	sort.Slice(s.trending[:], func(i, j int) bool {
-		return s.trending[i].LikesCount() > s.trending[j].LikesCount()
-	})
+func (s *SocialGraph) UpdateTrending(user *User) {
+	for i, v := range s.trending {
+		if v.LikesCount() < user.LikesCount() {
+			s.trending = append(s.trending[:i+1], s.trending[i:len(s.trending)-1]...)
+			s.trending[i] = user
+			break
+		}
+	}
+}
+
+func (s *SocialGraph) Trending() []*User {
 
 	if len(s.trending) > 3 {
 		return s.trending[:3]
