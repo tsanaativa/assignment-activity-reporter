@@ -18,7 +18,7 @@ func TestUser(t *testing.T) {
 		user := activityreporter.NewUser(username, &socialGraph)
 
 		//then
-		assert.Equal(t, user.Username, username)
+		assert.Equal(t, username, user.Username)
 	})
 
 	t.Run("should be able to follow user", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestUser(t *testing.T) {
 		err := user.FollowedBy(user)
 
 		//then
-		assert.ErrorIs(t, err, customerror.ErrFollowThemselves)
+		assert.ErrorIs(t, customerror.ErrFollowThemselves, err)
 	})
 
 	t.Run("should return error when user is already followed", func(t *testing.T) {
@@ -58,7 +58,7 @@ func TestUser(t *testing.T) {
 		err := user2.FollowedBy(user1)
 
 		//then
-		assert.ErrorIs(t, err, customerror.ErrAlreadyFollowed)
+		assert.ErrorIs(t, customerror.ErrAlreadyFollowed, err)
 	})
 
 	t.Run("should be able to upload photo", func(t *testing.T) {
@@ -85,6 +85,195 @@ func TestUser(t *testing.T) {
 		err := user.UploadPhoto()
 
 		//then
-		assert.ErrorIs(t, err, customerror.ErrAlreadyUploaded)
+		assert.ErrorIs(t, customerror.ErrAlreadyUploaded, err)
+	})
+
+	t.Run("should be able to like photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+		user2.UploadPhoto()
+
+		//when
+		err := user2.LikedPhotoBy(user1)
+
+		//then
+		assert.Nil(t, err)
+	})
+
+	t.Run("should be able to like their own photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		username := "Alice"
+		user := activityreporter.NewUser(username, &socialGraph)
+		user.UploadPhoto()
+
+		//when
+		err := user.LikedPhotoBy(user)
+
+		//then
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when like photo but user has already liked", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+		user2.UploadPhoto()
+		user2.LikedPhotoBy(user1)
+
+		//when
+		err := user2.LikedPhotoBy(user1)
+
+		//then
+		assert.ErrorIs(t, customerror.ErrAlreadyLiked, err)
+	})
+
+	t.Run("should return error when like photo but photo doesn't exist", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+
+		//when
+		err := user2.LikedPhotoBy(user1)
+
+		//then
+		assert.Equal(t, customerror.ErrPhotoDoesntExist(user2.Username, user1 == user2), err)
+	})
+
+	t.Run("should return error when like photo but user has not followed", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.UploadPhoto()
+
+		//when
+		err := user2.LikedPhotoBy(user1)
+
+		//then
+		assert.Equal(t, customerror.ErrUnableToLike(user2.Username), err)
+	})
+
+	t.Run("should be able to return the right likes count", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+		user2.UploadPhoto()
+		user2.LikedPhotoBy(user1)
+
+		//when
+		likesCount := user2.LikesCount()
+
+		//then
+		assert.Equal(t, 1, likesCount)
+	})
+
+	t.Run("should log the right activity when user uploaded photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		username := "Alice"
+		user := activityreporter.NewUser(username, &socialGraph)
+		user.UploadPhoto()
+
+		//when
+		activities := user.ActivityLog()
+
+		//then
+		assert.Equal(t, "You uploaded photo", activities[0])
+	})
+
+	t.Run("should be notified when followed user uploaded photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+		user2.UploadPhoto()
+
+		//when
+		activities := user1.ActivityLog()
+
+		//then
+		assert.Equal(t, "Bob uploaded photo", activities[0])
+	})
+
+	t.Run("should log the right activity when user liked photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.UploadPhoto()
+		user2.FollowedBy(user1)
+		user2.LikedPhotoBy(user1)
+
+		//when
+		activities := user1.ActivityLog()
+
+		//then
+		assert.Equal(t, "You liked Bob's photo", activities[0])
+	})
+
+	t.Run("should be notified when followed user liked photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user3 := activityreporter.NewUser("John", &socialGraph)
+		user2.FollowedBy(user1)
+		user1.FollowedBy(user3)
+		user2.UploadPhoto()
+		user2.LikedPhotoBy(user1)
+
+		//when
+		activities := user3.ActivityLog()
+
+		//then
+		assert.Equal(t, "Alice liked Bob's photo", activities[0])
+	})
+
+	t.Run("should log and not notified when followed user liked user's photo", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user2.FollowedBy(user1)
+		user1.FollowedBy(user2)
+		user2.UploadPhoto()
+		user2.LikedPhotoBy(user1)
+		expectedLog := []string{"You uploaded photo", "Alice liked your photo"}
+
+		//when
+		activities := user2.ActivityLog()
+
+		//then
+		assert.Equal(t, expectedLog, activities)
+	})
+
+	t.Run("should not be notified when user followed other user after other user acted", func(t *testing.T) {
+		//given
+		socialGraph := activityreporter.NewSocialGraph()
+		user1 := activityreporter.NewUser("Alice", &socialGraph)
+		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user3 := activityreporter.NewUser("John", &socialGraph)
+		user3.FollowedBy(user2)
+		user2.UploadPhoto()
+		user3.UploadPhoto()
+		user3.LikedPhotoBy(user2)
+		user2.FollowedBy(user1)
+
+		//when
+		activities := user1.ActivityLog()
+
+		//then
+		assert.Equal(t, 0, len(activities))
 	})
 }
