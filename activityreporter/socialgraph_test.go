@@ -63,10 +63,9 @@ func TestSocialGraph(t *testing.T) {
 		username := "Alice"
 		user := activityreporter.NewUser(username, &socialGraph)
 		socialGraph.AddNewUser(user)
-		user.UploadPhoto()
 
 		//when
-		socialGraph.AddToTrending(user)
+		user.UploadPhoto()
 
 		//then
 		assert.Equal(t, user, socialGraph.Trending()[0])

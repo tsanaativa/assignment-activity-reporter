@@ -62,7 +62,7 @@ func RunActivityReporter() {
 }
 
 func HandleSetup(input string) error {
-	inputSlice := strings.Split(input, " ")
+	inputSlice := strings.Fields(input)
 
 	if len(inputSlice) == 3 {
 
@@ -93,11 +93,11 @@ func HandleSetup(input string) error {
 		return printAndReturnError(customerror.ErrInvalidKeyword)
 	}
 
-	return printAndReturnError(customerror.ErrInvalidInput)
+	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
 func HandleAction(input string) error {
-	inputSlice := strings.Split(input, " ")
+	inputSlice := strings.Fields(input)
 
 	switch len(inputSlice) {
 	case 3:
@@ -107,7 +107,7 @@ func HandleAction(input string) error {
 		return HandleLike(inputSlice)
 
 	default:
-		return printAndReturnError(customerror.ErrInvalidInput)
+		return printAndReturnError(customerror.ErrInvalidKeyword)
 	}
 }
 
@@ -168,7 +168,7 @@ func HandleDisplay(input string) error {
 	return printAndReturnError(customerror.ErrUnknownUser(input))
 }
 
-func HandleTrending() {
+func HandleTrending() []*activityreporter.User {
 	fmt.Println("Trending photos:")
 
 	for i, v := range socialGraph.Trending() {
@@ -181,6 +181,8 @@ func HandleTrending() {
 
 		fmt.Println()
 	}
+
+	return socialGraph.Trending()
 }
 
 func printAndReturnError(err error) error {

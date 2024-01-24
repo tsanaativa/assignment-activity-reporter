@@ -7,7 +7,6 @@ import (
 
 var (
 	ErrInvalidMenu    = errors.New("invalid menu")
-	ErrInvalidInput   = errors.New("invalid input")
 	ErrInvalidKeyword = errors.New("invalid keyword")
 
 	ErrAlreadyFollowed  = errors.New("you already followed the user")
