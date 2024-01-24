@@ -30,7 +30,7 @@ func (u *User) FollowedBy(following *User) error {
 		return customerror.ErrFollowThemselves
 	}
 
-	if !u.IsFollowedBy(*following) {
+	if !u.isFollowedBy(*following) {
 		u.Register(following)
 		return nil
 	}
@@ -57,7 +57,7 @@ func (u *User) UploadPhoto() error {
 func (u *User) LikedPhotoBy(liker *User) error {
 	if u.hasUploadedPhoto {
 
-		if u.IsFollowedBy(*liker) || u.isEqualTo(*liker) {
+		if u.isFollowedBy(*liker) || u.isEqualTo(*liker) {
 
 			if !u.isAlreadyLikedBy(*liker) {
 				u.likedByList = append(u.likedByList, *liker)
@@ -74,7 +74,7 @@ func (u *User) LikedPhotoBy(liker *User) error {
 				log := fmt.Sprintf("%s liked your photo", likerStr)
 				u.logActivity(log)
 
-				if !liker.IsFollowedBy(*u) {
+				if !liker.isFollowedBy(*u) {
 					notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
 					liker.Notify(notification)
 				}
@@ -110,7 +110,7 @@ func (u *User) LikesCount() int {
 	return len(u.likedByList)
 }
 
-func (u *User) IsFollowedBy(followed User) bool {
+func (u *User) isFollowedBy(followed User) bool {
 	for _, v := range u.followerList {
 		user := v.(*User)
 
