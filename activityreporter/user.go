@@ -2,6 +2,7 @@ package activityreporter
 
 import (
 	"fmt"
+	"strings"
 
 	"git.garena.com/sea-labs-id/bootcamp/batch-03/tsanaativa-vinnera/assignment-activity-reporter/customerror"
 )
@@ -72,10 +73,8 @@ func (u *User) LikedPhotoBy(liker *User) error {
 				log := fmt.Sprintf("%s liked your photo", likerStr)
 				u.logActivity(log)
 
-				if !liker.isFollowedBy(*u) {
-					notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
-					liker.Notify(notification)
-				}
+				notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
+				liker.Notify(notification)
 
 				u.socialGraph.UpdateTrending(u)
 
@@ -132,8 +131,16 @@ func (u *User) Register(observer Observer) {
 }
 
 func (u *User) Notify(notification string) {
+	notifSlice := strings.Fields(notification)
+	isLike := notifSlice[1] == "liked" && notifSlice[3] == "photo"
+
 	for _, observer := range u.followerList {
-		observer.OnNotify(notification)
+		obvUser := observer.(*User)
+
+		if !isLike || !obvUser.isFollowedBy(*u) {
+			observer.OnNotify(notification)
+		}
+
 	}
 }
 

@@ -192,22 +192,7 @@ func TestUser(t *testing.T) {
 		assert.Equal(t, "You uploaded photo", activities[0])
 	})
 
-	t.Run("should be notified when followed user uploaded photo", func(t *testing.T) {
-		//given
-		socialGraph := activityreporter.NewSocialGraph()
-		user := activityreporter.NewUser("Bob", &socialGraph)
-		mockObserver := new(mocks.Observer)
-		mockObserver.On("OnNotify", "Bob uploaded photo").Return()
-		user.Register(mockObserver)
-
-		//when
-		user.UploadPhoto()
-
-		//then
-		mockObserver.AssertNumberOfCalls(t, "OnNotify", 1)
-	})
-
-	t.Run("should log the right notification when followed user uploaded photo", func(t *testing.T) {
+	t.Run("should get notified when followed user uploaded photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		user1 := activityreporter.NewUser("Alice", &socialGraph)
@@ -253,7 +238,7 @@ func TestUser(t *testing.T) {
 		assert.Equal(t, expectedLog, activities)
 	})
 
-	t.Run("should log the right notification when followed user liked photo", func(t *testing.T) {
+	t.Run("should get notified when followed user liked photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		user1 := activityreporter.NewUser("Alice", &socialGraph)
@@ -289,7 +274,7 @@ func TestUser(t *testing.T) {
 		assert.Equal(t, expectedLog, activities)
 	})
 
-	t.Run("should not be notified when user followed other user after other user acted", func(t *testing.T) {
+	t.Run("should not get notified when user followed other user after other user acted", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		user := activityreporter.NewUser("Bob", &socialGraph)
