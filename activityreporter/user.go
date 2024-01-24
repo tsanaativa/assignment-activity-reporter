@@ -61,20 +61,7 @@ func (u *User) LikedPhotoBy(liker *User) error {
 			if !u.isAlreadyLikedBy(*liker) {
 				u.likedByList = append(u.likedByList, *liker)
 
-				likerStr := liker.Username
-				if u.isEqualTo(*liker) {
-					likerStr = "You"
-
-				} else {
-					likerLog := fmt.Sprintf("You liked %s's photo", u.Username)
-					liker.logActivity(likerLog)
-				}
-
-				log := fmt.Sprintf("%s liked your photo", likerStr)
-				u.logActivity(log)
-
-				notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
-				liker.Notify(notification)
+				u.updateLikeActivity(liker)
 
 				u.socialGraph.UpdateTrending(u)
 
@@ -88,6 +75,23 @@ func (u *User) LikedPhotoBy(liker *User) error {
 	}
 
 	return customerror.ErrPhotoDoesntExist(u.Username, u.isEqualTo(*liker))
+}
+
+func (u *User) updateLikeActivity(liker *User) {
+	likerStr := liker.Username
+	if u.isEqualTo(*liker) {
+		likerStr = "You"
+
+	} else {
+		likerLog := fmt.Sprintf("You liked %s's photo", u.Username)
+		liker.logActivity(likerLog)
+	}
+
+	log := fmt.Sprintf("%s liked your photo", likerStr)
+	u.logActivity(log)
+
+	notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
+	liker.Notify(notification)
 }
 
 func (u *User) isEqualTo(otherUser User) bool {
