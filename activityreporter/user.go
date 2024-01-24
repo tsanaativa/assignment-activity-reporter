@@ -47,8 +47,6 @@ func (u *User) UploadPhoto() error {
 		notification := fmt.Sprintf("%s uploaded photo", u.Username)
 		u.Notify(notification)
 
-		u.socialGraph.AddToTrending(u)
-
 		return nil
 	}
 	return customerror.ErrAlreadyUploaded

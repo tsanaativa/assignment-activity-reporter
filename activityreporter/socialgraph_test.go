@@ -60,15 +60,18 @@ func TestSocialGraph(t *testing.T) {
 	t.Run("should be able to add user to trending list", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
-		socialGraph.AddNewUser(user)
+		user1 := activityreporter.NewUser("Misha", &socialGraph)
+		user2 := activityreporter.NewUser("Mikey", &socialGraph)
+		socialGraph.AddNewUser(user1)
+		socialGraph.AddNewUser(user2)
+		user1.FollowedBy(user2)
+		user1.UploadPhoto()
 
 		//when
-		user.UploadPhoto()
+		user1.LikedPhotoBy(user2)
 
 		//then
-		assert.Equal(t, user, socialGraph.Trending()[0])
+		assert.Equal(t, user1, socialGraph.Trending()[0])
 	})
 
 	t.Run("should be able to get the right trending list", func(t *testing.T) {
@@ -80,8 +83,13 @@ func TestSocialGraph(t *testing.T) {
 		socialGraph.AddNewUser(user2)
 		user1.UploadPhoto()
 		user2.UploadPhoto()
+
+		user1.FollowedBy(user2)
+		user1.LikedPhotoBy(user2)
+
 		user2.FollowedBy(user1)
 		user2.LikedPhotoBy(user1)
+		user2.LikedPhotoBy(user2)
 
 		//when
 		firstUser := socialGraph.Trending()[0]
@@ -101,12 +109,20 @@ func TestSocialGraph(t *testing.T) {
 		socialGraph.AddNewUser(user2)
 		socialGraph.AddNewUser(user3)
 		socialGraph.AddNewUser(user4)
-
-		//when
+		user1.FollowedBy(user2)
+		user2.FollowedBy(user3)
+		user3.FollowedBy(user4)
+		user4.FollowedBy(user1)
 		user1.UploadPhoto()
 		user2.UploadPhoto()
 		user3.UploadPhoto()
 		user4.UploadPhoto()
+
+		//when
+		user1.LikedPhotoBy(user2)
+		user2.LikedPhotoBy(user3)
+		user3.LikedPhotoBy(user4)
+		user4.LikedPhotoBy(user1)
 
 		//then
 		assert.Equal(t, 3, len(socialGraph.Trending()))

@@ -39,9 +39,10 @@ func (s *SocialGraph) insertInTrending(user *User) {
 		if v.LikesCount() < user.LikesCount() {
 			s.trending = append(s.trending[:i+1], s.trending[i:len(s.trending)]...)
 			s.trending[i] = user
-			break
+			return
 		}
 	}
+	s.AddToTrending(user)
 }
 
 func (s *SocialGraph) removeFromTrending(idx int) {
@@ -49,15 +50,14 @@ func (s *SocialGraph) removeFromTrending(idx int) {
 }
 
 func (s *SocialGraph) getIdxInTrending(user *User) int {
-	var idx int
 	for i, v := range s.trending {
 
 		if v.isEqualTo(*user) {
-			idx = i
+			return i
 		}
 	}
 
-	return idx
+	return -1
 }
 
 func (s *SocialGraph) Trending() []*User {
