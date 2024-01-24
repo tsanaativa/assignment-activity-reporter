@@ -52,21 +52,27 @@ func (a *App) RunApp(scanner *bufio.Scanner) error {
 			occuredErr = err
 
 		case "4":
+			fmt.Println()
 			HandleTrending(socialGraph)
+			fmt.Println()
 
 		case "5":
 			fmt.Println("Good bye!")
 			exit = true
 
 		default:
+			fmt.Println()
 			occuredErr = printAndReturnError(customerror.ErrInvalidMenu)
 		}
 	}
+
 	return occuredErr
 }
 
 func HandleSetup(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
 	input := promptInput(scanner, "Setup social graph: ")
+	fmt.Println()
+
 	inputSlice := strings.Fields(input)
 
 	if len(inputSlice) == 3 {
@@ -103,6 +109,8 @@ func HandleSetup(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGra
 
 func HandleAction(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
 	input := promptInput(scanner, "Enter user Actions: ")
+	fmt.Println()
+
 	inputSlice := strings.Fields(input)
 
 	switch len(inputSlice) {
@@ -162,6 +170,8 @@ func HandleLike(inputSlice []string, socialGraph *activityreporter.SocialGraph) 
 
 func HandleDisplay(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
 	input := promptInput(scanner, "Display activity for: ")
+	fmt.Println()
+
 	val, ok := socialGraph.IsUserExist(input)
 	if ok {
 		fmt.Printf("%s activities:\n", val.Username)
@@ -170,6 +180,7 @@ func HandleDisplay(scanner *bufio.Scanner, socialGraph *activityreporter.SocialG
 			fmt.Println(v)
 		}
 
+		fmt.Println()
 		return nil
 	}
 	return printAndReturnError(customerror.ErrUnknownUser(input))
@@ -195,6 +206,7 @@ func HandleTrending(socialGraph *activityreporter.SocialGraph) []*activityreport
 func printAndReturnError(err error) error {
 	if err != nil {
 		fmt.Println(err.Error())
+		fmt.Println()
 	}
 	return err
 }
