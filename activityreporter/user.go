@@ -125,7 +125,7 @@ func (u *User) logActivity(log string) {
 	u.activityReport = append(u.activityReport, log)
 }
 
-func (u *User) ActivityLog() []string {
+func (u *User) ActivityReport() []string {
 	return u.activityReport
 }
 

@@ -14,7 +14,7 @@ func TestUser(t *testing.T) {
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
 
-		//whem
+		//when
 		user := activityreporter.NewUser(username, &socialGraph)
 
 		//then
@@ -185,7 +185,7 @@ func TestUser(t *testing.T) {
 		user.UploadPhoto()
 
 		//when
-		activities := user.ActivityLog()
+		activities := user.ActivityReport()
 
 		//then
 		assert.Equal(t, "You uploaded photo", activities[0])
@@ -200,7 +200,7 @@ func TestUser(t *testing.T) {
 		user2.UploadPhoto()
 
 		//when
-		activities := user1.ActivityLog()
+		activities := user1.ActivityReport()
 
 		//then
 		assert.Equal(t, "Bob uploaded photo", activities[0])
@@ -216,7 +216,7 @@ func TestUser(t *testing.T) {
 		user2.LikedPhotoBy(user1)
 
 		//when
-		activities := user1.ActivityLog()
+		activities := user1.ActivityReport()
 
 		//then
 		assert.Equal(t, "You liked Bob's photo", activities[0])
@@ -234,7 +234,7 @@ func TestUser(t *testing.T) {
 		user2.LikedPhotoBy(user1)
 
 		//when
-		activities := user3.ActivityLog()
+		activities := user3.ActivityReport()
 
 		//then
 		assert.Equal(t, "Alice liked Bob's photo", activities[0])
@@ -252,7 +252,7 @@ func TestUser(t *testing.T) {
 		expectedLog := []string{"You uploaded photo", "Alice liked your photo"}
 
 		//when
-		activities := user2.ActivityLog()
+		activities := user2.ActivityReport()
 
 		//then
 		assert.Equal(t, expectedLog, activities)
@@ -271,7 +271,7 @@ func TestUser(t *testing.T) {
 		user2.FollowedBy(user1)
 
 		//when
-		activities := user1.ActivityLog()
+		activities := user1.ActivityReport()
 
 		//then
 		assert.Equal(t, 0, len(activities))

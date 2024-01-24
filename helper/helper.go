@@ -159,7 +159,7 @@ func HandleDisplay(input string) error {
 	if ok {
 		fmt.Printf("%s activities:\n", val.Username)
 
-		for _, v := range val.ActivityLog() {
+		for _, v := range val.ActivityReport() {
 			fmt.Println(v)
 		}
 
