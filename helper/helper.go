@@ -175,7 +175,7 @@ func HandleTrending() []*activityreporter.User {
 		likesCount := v.LikesCount()
 		fmt.Printf("%d. %s photo got %d like", i+1, v.Username, likesCount)
 
-		if likesCount != 1 {
+		if likesCount > 1 {
 			fmt.Printf("s")
 		}
 
