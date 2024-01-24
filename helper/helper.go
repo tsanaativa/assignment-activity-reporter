@@ -49,6 +49,7 @@ func RunActivityReporter() {
 			HandleDisplay(displayInput)
 
 		case "4":
+			HandleTrending()
 
 		case "5":
 			fmt.Println("Good bye!")
@@ -169,7 +170,18 @@ func HandleDisplay(input string) error {
 }
 
 func HandleTrending() {
+	fmt.Println("Trending photos:")
 
+	for i, v := range socialGraph.Trending() {
+		likesCount := v.LikesCount()
+		fmt.Printf("%d. %s photo got %d like", i+1, v.Username, likesCount)
+
+		if likesCount > 1 {
+			fmt.Printf("s")
+		}
+
+		fmt.Println()
+	}
 }
 
 func printAndReturnError(err error) error {
