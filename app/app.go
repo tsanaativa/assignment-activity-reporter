@@ -1,9 +1,8 @@
-package helper
+package app
 
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"strings"
 
 	"git.garena.com/sea-labs-id/bootcamp/batch-03/tsanaativa-vinnera/assignment-activity-reporter/activityreporter"
@@ -16,12 +15,16 @@ func promptInput(scanner *bufio.Scanner, text string) string {
 	return scanner.Text()
 }
 
-var (
-	scanner     = bufio.NewScanner(os.Stdin)
-	socialGraph = activityreporter.NewSocialGraph()
-)
+type App struct{}
 
-func RunActivityReporter() {
+func NewApp() *App {
+	return &App{}
+}
+
+func (a *App) RunApp(scanner *bufio.Scanner) error {
+	socialGraph := activityreporter.NewSocialGraph()
+
+	var occuredErr error
 	exit := false
 	menu := "Activity Reporter\n\n" +
 		"1. Setup\n" +
@@ -37,31 +40,33 @@ func RunActivityReporter() {
 		switch input {
 
 		case "1":
-			setupInput := promptInput(scanner, "Setup social graph: ")
-			HandleSetup(setupInput)
+			err := HandleSetup(scanner, socialGraph)
+			occuredErr = err
 
 		case "2":
-			actionInput := promptInput(scanner, "Enter user Actions: ")
-			HandleAction(actionInput)
+			err := HandleAction(scanner, socialGraph)
+			occuredErr = err
 
 		case "3":
-			displayInput := promptInput(scanner, "Display activity for: ")
-			HandleDisplay(displayInput)
+			err := HandleDisplay(scanner, socialGraph)
+			occuredErr = err
 
 		case "4":
-			HandleTrending()
+			HandleTrending(socialGraph)
 
 		case "5":
 			fmt.Println("Good bye!")
 			exit = true
 
 		default:
-			printInvalidMenu()
+			occuredErr = printAndReturnError(customerror.ErrInvalidMenu)
 		}
 	}
+	return occuredErr
 }
 
-func HandleSetup(input string) error {
+func HandleSetup(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
+	input := promptInput(scanner, "Setup social graph: ")
 	inputSlice := strings.Fields(input)
 
 	if len(inputSlice) == 3 {
@@ -72,13 +77,13 @@ func HandleSetup(input string) error {
 
 			user1, ok := socialGraph.IsUserExist(username1)
 			if !ok {
-				user1 = activityreporter.NewUser(username1, &socialGraph)
+				user1 = activityreporter.NewUser(username1, socialGraph)
 				socialGraph.AddNewUser(user1)
 			}
 
 			user2, ok := socialGraph.IsUserExist(username2)
 			if !ok {
-				user2 = activityreporter.NewUser(username2, &socialGraph)
+				user2 = activityreporter.NewUser(username2, socialGraph)
 				socialGraph.AddNewUser(user2)
 			}
 
@@ -96,22 +101,23 @@ func HandleSetup(input string) error {
 	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
-func HandleAction(input string) error {
+func HandleAction(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
+	input := promptInput(scanner, "Enter user Actions: ")
 	inputSlice := strings.Fields(input)
 
 	switch len(inputSlice) {
 	case 3:
-		return HandleUpload(inputSlice)
+		return HandleUpload(inputSlice, socialGraph)
 
 	case 4:
-		return HandleLike(inputSlice)
+		return HandleLike(inputSlice, socialGraph)
 
 	default:
 		return printAndReturnError(customerror.ErrInvalidKeyword)
 	}
 }
 
-func HandleUpload(inputSlice []string) error {
+func HandleUpload(inputSlice []string, socialGraph *activityreporter.SocialGraph) error {
 	if inputSlice[1] == "uploaded" && inputSlice[2] == "photo" {
 		username := inputSlice[0]
 
@@ -130,7 +136,7 @@ func HandleUpload(inputSlice []string) error {
 	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
-func HandleLike(inputSlice []string) error {
+func HandleLike(inputSlice []string, socialGraph *activityreporter.SocialGraph) error {
 	if inputSlice[1] == "likes" && inputSlice[3] == "photo" {
 		username1, username2 := inputSlice[0], inputSlice[2]
 
@@ -154,7 +160,8 @@ func HandleLike(inputSlice []string) error {
 	return printAndReturnError(customerror.ErrInvalidKeyword)
 }
 
-func HandleDisplay(input string) error {
+func HandleDisplay(scanner *bufio.Scanner, socialGraph *activityreporter.SocialGraph) error {
+	input := promptInput(scanner, "Display activity for: ")
 	val, ok := socialGraph.IsUserExist(input)
 	if ok {
 		fmt.Printf("%s activities:\n", val.Username)
@@ -168,7 +175,7 @@ func HandleDisplay(input string) error {
 	return printAndReturnError(customerror.ErrUnknownUser(input))
 }
 
-func HandleTrending() []*activityreporter.User {
+func HandleTrending(socialGraph *activityreporter.SocialGraph) []*activityreporter.User {
 	fmt.Println("Trending photos:")
 
 	for i, v := range socialGraph.Trending() {
@@ -186,10 +193,8 @@ func HandleTrending() []*activityreporter.User {
 }
 
 func printAndReturnError(err error) error {
-	fmt.Println(err.Error())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return err
-}
-
-func printInvalidMenu() {
-	fmt.Println(customerror.ErrInvalidMenu)
 }

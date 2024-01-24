@@ -5,8 +5,8 @@ type SocialGraph struct {
 	trending []*User
 }
 
-func NewSocialGraph() SocialGraph {
-	return SocialGraph{
+func NewSocialGraph() *SocialGraph {
+	return &SocialGraph{
 		userList: make(map[string]*User),
 	}
 }

@@ -20,7 +20,7 @@ func TestSocialGraph(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//when
 		socialGraph.AddNewUser(user)
@@ -34,7 +34,7 @@ func TestSocialGraph(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//when
 		socialGraph.AddNewUser(user)
@@ -50,7 +50,7 @@ func TestSocialGraph(t *testing.T) {
 		username := "Alice"
 
 		//when
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//then
 		_, isExist := socialGraph.IsUserExist(user.Username)
@@ -60,8 +60,8 @@ func TestSocialGraph(t *testing.T) {
 	t.Run("should be able to add user to trending list", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Misha", &socialGraph)
-		user2 := activityreporter.NewUser("Mikey", &socialGraph)
+		user1 := activityreporter.NewUser("Misha", socialGraph)
+		user2 := activityreporter.NewUser("Mikey", socialGraph)
 		socialGraph.AddNewUser(user1)
 		socialGraph.AddNewUser(user2)
 		user1.FollowedBy(user2)
@@ -77,8 +77,8 @@ func TestSocialGraph(t *testing.T) {
 	t.Run("should be able to get the right trending list", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		socialGraph.AddNewUser(user1)
 		socialGraph.AddNewUser(user2)
 		user1.UploadPhoto()
@@ -101,10 +101,10 @@ func TestSocialGraph(t *testing.T) {
 	t.Run("should be able to get 3 trending users when users are more than 3", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
-		user3 := activityreporter.NewUser("John", &socialGraph)
-		user4 := activityreporter.NewUser("Bill", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
+		user3 := activityreporter.NewUser("John", socialGraph)
+		user4 := activityreporter.NewUser("Bill", socialGraph)
 		socialGraph.AddNewUser(user1)
 		socialGraph.AddNewUser(user2)
 		socialGraph.AddNewUser(user3)
@@ -131,8 +131,8 @@ func TestSocialGraph(t *testing.T) {
 	t.Run("should be able to update trending list correctly", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		socialGraph.AddNewUser(user1)
 		socialGraph.AddNewUser(user2)
 		user1.UploadPhoto()

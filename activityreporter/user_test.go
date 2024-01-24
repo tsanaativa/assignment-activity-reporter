@@ -16,7 +16,7 @@ func TestUser(t *testing.T) {
 		username := "Alice"
 
 		//when
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//then
 		assert.Equal(t, username, user.Username)
@@ -25,8 +25,8 @@ func TestUser(t *testing.T) {
 	t.Run("should be able to follow user", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 
 		//when
 		err := user2.FollowedBy(user1)
@@ -39,7 +39,7 @@ func TestUser(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//when
 		err := user.FollowedBy(user)
@@ -51,8 +51,8 @@ func TestUser(t *testing.T) {
 	t.Run("should return error when user is already followed", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 
 		//when
@@ -66,7 +66,7 @@ func TestUser(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 
 		//when
 		err := user.UploadPhoto()
@@ -79,7 +79,7 @@ func TestUser(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 		user.UploadPhoto()
 
 		//when
@@ -92,8 +92,8 @@ func TestUser(t *testing.T) {
 	t.Run("should be able to like photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 		user2.UploadPhoto()
 
@@ -108,7 +108,7 @@ func TestUser(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 		user.UploadPhoto()
 
 		//when
@@ -121,8 +121,8 @@ func TestUser(t *testing.T) {
 	t.Run("should return error when like photo but user has already liked", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 		user2.UploadPhoto()
 		user2.LikedPhotoBy(user1)
@@ -137,8 +137,8 @@ func TestUser(t *testing.T) {
 	t.Run("should return error when like photo but photo doesn't exist", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 
 		//when
@@ -151,8 +151,8 @@ func TestUser(t *testing.T) {
 	t.Run("should return error when like photo but user has not followed", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.UploadPhoto()
 
 		//when
@@ -165,8 +165,8 @@ func TestUser(t *testing.T) {
 	t.Run("should be able to return the right likes count", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 		user2.UploadPhoto()
 		user2.LikedPhotoBy(user1)
@@ -182,7 +182,7 @@ func TestUser(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
 		username := "Alice"
-		user := activityreporter.NewUser(username, &socialGraph)
+		user := activityreporter.NewUser(username, socialGraph)
 		user.UploadPhoto()
 
 		//when
@@ -195,8 +195,8 @@ func TestUser(t *testing.T) {
 	t.Run("should get notified when followed user uploaded photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 		user2.UploadPhoto()
 
@@ -210,8 +210,8 @@ func TestUser(t *testing.T) {
 	t.Run("should log the right activity when user liked photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.UploadPhoto()
 		user2.FollowedBy(user1)
 		user2.LikedPhotoBy(user1)
@@ -226,7 +226,7 @@ func TestUser(t *testing.T) {
 	t.Run("should log the right activity when user liked their own photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user := activityreporter.NewUser("Bob", &socialGraph)
+		user := activityreporter.NewUser("Bob", socialGraph)
 		user.UploadPhoto()
 		user.LikedPhotoBy(user)
 		expectedLog := []string{"You uploaded photo", "You liked your photo"}
@@ -241,9 +241,9 @@ func TestUser(t *testing.T) {
 	t.Run("should get notified when followed user liked photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
-		user3 := activityreporter.NewUser("John", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
+		user3 := activityreporter.NewUser("John", socialGraph)
 		user2.FollowedBy(user1)
 		user1.FollowedBy(user3)
 		user2.UploadPhoto()
@@ -259,8 +259,8 @@ func TestUser(t *testing.T) {
 	t.Run("should log activity not log notification when followed user liked user's photo", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
 		user2.FollowedBy(user1)
 		user1.FollowedBy(user2)
 		user2.UploadPhoto()
@@ -277,7 +277,7 @@ func TestUser(t *testing.T) {
 	t.Run("should not get notified when user followed other user after other user acted", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user := activityreporter.NewUser("Bob", &socialGraph)
+		user := activityreporter.NewUser("Bob", socialGraph)
 
 		mockObserver := new(mocks.Observer)
 		mockObserver.On("OnNotify", "Bob uploaded photo").Return()
@@ -293,9 +293,9 @@ func TestUser(t *testing.T) {
 	t.Run("should not log notification when user followed other user after other user acted", func(t *testing.T) {
 		//given
 		socialGraph := activityreporter.NewSocialGraph()
-		user1 := activityreporter.NewUser("Alice", &socialGraph)
-		user2 := activityreporter.NewUser("Bob", &socialGraph)
-		user3 := activityreporter.NewUser("John", &socialGraph)
+		user1 := activityreporter.NewUser("Alice", socialGraph)
+		user2 := activityreporter.NewUser("Bob", socialGraph)
+		user3 := activityreporter.NewUser("John", socialGraph)
 		user3.FollowedBy(user2)
 		user2.UploadPhoto()
 		user3.UploadPhoto()
