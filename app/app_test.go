@@ -302,7 +302,7 @@ func TestApp(t *testing.T) {
 
 	t.Run("should return invalid input menu when menu is invalid", func(t *testing.T) {
 		//given
-		input := "6\n"
+		input := "6\n5\n"
 		buf := strings.NewReader(input)
 		scanner := bufio.NewScanner(buf)
 
