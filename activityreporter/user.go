@@ -78,17 +78,17 @@ func (u *User) LikedPhotoBy(liker *User) error {
 }
 
 func (u *User) updateLikeActivity(liker *User) {
-	likerStr := liker.Username
 	if u.isEqualTo(*liker) {
-		likerStr = "You"
+		log := "You liked your photo"
+		liker.logActivity(log)
 
 	} else {
 		likerLog := fmt.Sprintf("You liked %s's photo", u.Username)
 		liker.logActivity(likerLog)
-	}
 
-	log := fmt.Sprintf("%s liked your photo", likerStr)
-	u.logActivity(log)
+		log := fmt.Sprintf("%s liked your photo", liker.Username)
+		u.logActivity(log)
+	}
 
 	notification := fmt.Sprintf("%s liked %s's photo", liker.Username, u.Username)
 	liker.Notify(notification)
@@ -138,10 +138,15 @@ func (u *User) Notify(notification string) {
 	notifSlice := strings.Fields(notification)
 	isLike := notifSlice[1] == "liked" && notifSlice[3] == "photo"
 
+	var liked string
+	if isLike {
+		liked = strings.Split(notifSlice[2], "'")[0]
+	}
+
 	for _, observer := range u.followerList {
 		obvUser := observer.(*User)
 
-		if !isLike || !obvUser.isFollowedBy(*u) {
+		if !isLike || !(obvUser.isFollowedBy(*u) && liked == obvUser.Username) {
 			observer.OnNotify(notification)
 		}
 
